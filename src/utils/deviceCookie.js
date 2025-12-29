@@ -27,14 +27,35 @@ export const setDeviceId = (deviceId) => {
 };
 
 /**
- * Initialize device ID - get from backend and set cookie
+ * Get device ID from localStorage
+ */
+export const getDeviceIdFromStorage = () => {
+    return localStorage.getItem('userId') || localStorage.getItem('deviceId');
+};
+
+/**
+ * Set device ID in localStorage
+ */
+export const setDeviceIdInStorage = (deviceId) => {
+    localStorage.setItem('userId', deviceId);
+    localStorage.setItem('deviceId', deviceId); // Keep for backward compatibility
+};
+
+/**
+ * Initialize device ID - get from backend and set cookie and localStorage
  * This should be called when the app loads
  */
 export const initializeDeviceId = async () => {
     try {
-        // Check if device ID already exists in cookie
-        let deviceId = getDeviceId();
+        // Check if device ID already exists in localStorage first
+        let deviceId = getDeviceIdFromStorage();
         
+        // If not in localStorage, check cookie
+        if (!deviceId) {
+            deviceId = getDeviceId();
+        }
+        
+        // If still not found, get or create from backend
         if (!deviceId) {
             // Get or create device ID from backend
             const response = await apiClient.get('/api/device-id');
@@ -44,12 +65,16 @@ export const initializeDeviceId = async () => {
             setDeviceId(deviceId);
         }
         
+        // Always store in localStorage for getUserOrders to use
+        setDeviceIdInStorage(deviceId);
+        
         return deviceId;
     } catch (error) {
         console.error('Error initializing device ID:', error);
         // Generate a fallback device ID if backend fails
         const fallbackId = `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         setDeviceId(fallbackId);
+        setDeviceIdInStorage(fallbackId);
         return fallbackId;
     }
 };

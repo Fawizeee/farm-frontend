@@ -62,7 +62,7 @@ function OrderPage({ cart, setCart, pendingOrders: localPendingOrders, addPendin
             try {
                 setLoadingOrders(true);
                 // Fetch all orders from database (no status filter)
-                const orders = await getUserOrders(null);
+                const orders = await getUserOrders();
                 // Format orders to match the expected structure
                 const formattedOrders = orders.map(order => ({
                     id: order.id,

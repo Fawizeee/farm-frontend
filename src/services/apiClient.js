@@ -49,7 +49,7 @@ apiClient.interceptors.response.use(
         if (error.response && error.response.status === 401) {
             // Clear local storage and redirect to login if necessary
             localStorage.removeItem('authToken');
-            // window.location.href = '/login'; // Uncomment to auto-redirect
+            window.location.href = '/login'; // Uncomment to auto-redirect
         }
 
         // Enhanced error logging

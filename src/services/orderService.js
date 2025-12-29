@@ -40,9 +40,18 @@ export const deleteOrder = async (id) => {
 };
 
 export const getUserOrders = async (statusFilter = null) => {
-    const response = await apiClient.get('/api/orders/user/orders', {
-        params: statusFilter ? { status_filter: statusFilter } : {}
-    });
+    // Get user ID from localStorage
+    const userId = localStorage.getItem('userId') || localStorage.getItem('deviceId');
+    
+    const params = {};
+    if (userId) {
+        params.user_id = userId;
+    }
+    if (statusFilter) {
+        params.status_filter = statusFilter;
+    }
+    
+    const response = await apiClient.get('/api/orders/user/orders', { params });
     return response.data;
 };
 
