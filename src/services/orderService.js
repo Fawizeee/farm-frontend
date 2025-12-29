@@ -40,7 +40,7 @@ export const deleteOrder = async (id) => {
 };
 
 export const getUserOrders = async (statusFilter = null) => {
-    const response = await apiClient.get('/api/user/orders', {
+    const response = await apiClient.get('/api/orders/user/orders', {
         params: statusFilter ? { status_filter: statusFilter } : {}
     });
     return response.data;

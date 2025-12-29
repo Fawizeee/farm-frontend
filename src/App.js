@@ -25,9 +25,27 @@ import {
 import './utils/testNotifications'; // Import test utilities
 
 function App() {
-  const [cart, setCart] = useState([]);
+  // Load cart from localStorage on mount
+  const [cart, setCart] = useState(() => {
+    try {
+      const savedCart = localStorage.getItem('cart');
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
+      return [];
+    }
+  });
   const [pendingOrders, setPendingOrders] = useState([]);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    } catch (error) {
+      console.error('Error saving cart to localStorage:', error);
+    }
+  }, [cart]);
 
   // Initialize device cookie when app loads
   useEffect(() => {
