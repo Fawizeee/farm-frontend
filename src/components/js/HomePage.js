@@ -6,6 +6,10 @@ import Testimonials from './Testimonials';
 import '../css/App.css';
 
 function HomePage() {
+    React.useEffect(() => {
+        document.title = 'Mufu Catfish Farm - Fresh Farm-to-Table Catfish';
+    }, []);
+
     return (
         <>
             <section id="home" className="hero-section">

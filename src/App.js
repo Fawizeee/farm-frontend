@@ -16,11 +16,11 @@ import EditProductsPage from './components/js/EditProductsPage';
 import NotificationAnalyticsPage from './components/js/NotificationAnalyticsPage';
 import { initializeDeviceId } from './utils/deviceCookie';
 import NotificationPermissionModal from './components/js/NotificationPermissionModal';
-import { 
-  initializeNotifications, 
-  isNotificationSupported, 
+import {
+  initializeNotifications,
+  isNotificationSupported,
   hasNotificationPermission,
-  isNotificationDenied 
+  isNotificationDenied
 } from './services/notificationService';
 import './utils/testNotifications'; // Import test utilities
 
@@ -58,7 +58,7 @@ function App() {
       console.log('Setting up notifications...');
       console.log('User agent:', navigator.userAgent);
       console.log('Is mobile:', /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
-      
+
       // Check if notifications are supported
       if (!isNotificationSupported()) {
         console.log('Notifications are not supported in this browser');
@@ -83,36 +83,56 @@ function App() {
       }
 
       // Check if we should show the notification modal
-      // Don't show if:
-      // 1. Permission is already granted
-      // 2. Permission is denied
-      // 3. User dismissed the modal recently (within 7 days)
-      if (!hasNotificationPermission() && !isNotificationDenied()) {
-        console.log('Permission not granted or denied, checking if modal should show...');
-        
-        const dismissed = localStorage.getItem('notificationModalDismissed');
-        const dismissedTime = localStorage.getItem('notificationModalDismissedTime');
-        
-        if (dismissed === 'true' && dismissedTime) {
-          const daysSinceDismissed = (Date.now() - parseInt(dismissedTime)) / (1000 * 60 * 60 * 24);
-          console.log(`Modal was dismissed ${daysSinceDismissed.toFixed(2)} days ago`);
-          // Show modal again after 7 days
-          if (daysSinceDismissed < 7) {
-            console.log('Modal was recently dismissed, not showing again yet');
-            return;
+      // Logic update: We want to show the modal if:
+      // 1. Permission is NOT granted OR
+      // 2. Permission IS granted, but we don't have a valid token (user treated as unsubscribed)
+      // AND we haven't dismissed it recently.
+
+      const checkAndShowModal = async () => {
+        let shouldShow = false;
+
+        if (Notification.permission === 'default') {
+          shouldShow = true;
+        } else if (Notification.permission === 'granted') {
+          // If permission is granted, checking for token usually regenerates it.
+          // Instead, we check our intent flag 'mufu_push_subscribed'.
+          // If permission is granted but this flag is missing, we consider them unsubscribed.
+          const isSubscribedLocally = localStorage.getItem('mufu_push_subscribed') === 'true';
+
+          if (!isSubscribedLocally) {
+            console.log('Permission granted but intent flag missing (unsubscribed). Showing modal to re-subscribe.');
+            shouldShow = true;
           }
         }
 
-        console.log('Showing notification modal...');
-        // On mobile, show modal immediately or with shorter delay
-        const delay = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 1000 : 2000;
-        setTimeout(() => {
-          console.log('Setting modal to show');
-          setShowNotificationModal(true);
-        }, delay);
-      } else {
-        console.log('Permission already granted or denied, not showing modal');
-      }
+        if (isNotificationDenied()) {
+          shouldShow = false; // Don't annoy if denied
+        }
+
+        if (shouldShow) {
+          console.log('Conditions met to potentially show modal...');
+          const dismissed = localStorage.getItem('notificationModalDismissed');
+          const dismissedTime = localStorage.getItem('notificationModalDismissedTime');
+
+          if (dismissed === 'true' && dismissedTime) {
+            const daysSinceDismissed = (Date.now() - parseInt(dismissedTime)) / (1000 * 60 * 60 * 24);
+            if (daysSinceDismissed < 7) {
+              console.log('Modal was recently dismissed, not showing again yet');
+              return;
+            }
+          }
+
+          console.log('Showing notification modal...');
+          const delay = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 1000 : 2000;
+          setTimeout(() => {
+            setShowNotificationModal(true);
+          }, delay);
+        } else {
+          console.log('Modal conditions not met (Permission granted & token exists, or denied)');
+        }
+      };
+
+      checkAndShowModal();
     };
 
     setupNotifications();

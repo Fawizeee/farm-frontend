@@ -12,6 +12,11 @@ function ContactPage() {
         subject: '',
         message: ''
     });
+
+    React.useEffect(() => {
+        document.title = 'Contact Us - Mufu Catfish Farm';
+    }, []);
+
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
@@ -53,7 +58,7 @@ function ContactPage() {
                     <div className="location-map">
                         <iframe
                             title="Mufu Farm Location"
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.0!2d3.4!3d6.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMzAnMDAuMCJOIDPCsDI0JzAwLjAiRQ!5e0!3m2!1sen!2sng!4v1234567890"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.0!2d3.5000!3d6.6000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103be90000000001%3A0x0!2zR0dWUitYNSwgSWtvcm9kdQ!5e0!3m2!1sen!2sng!4v1234567890"
                             width="100%"
                             height="300"
                             style={{ border: 0, borderRadius: '12px' }}
@@ -123,23 +128,23 @@ function ContactPage() {
                 <div className="directions-card">
                     <h2>Send Us a Message</h2>
                     {success && (
-                        <div style={{ 
-                            padding: '15px', 
-                            backgroundColor: '#d4edda', 
-                            color: '#155724', 
-                            borderRadius: '8px', 
-                            marginBottom: '20px' 
+                        <div style={{
+                            padding: '15px',
+                            backgroundColor: '#d4edda',
+                            color: '#155724',
+                            borderRadius: '8px',
+                            marginBottom: '20px'
                         }}>
                             Message sent successfully! We'll get back to you soon.
                         </div>
                     )}
                     {error && (
-                        <div style={{ 
-                            padding: '15px', 
-                            backgroundColor: '#f8d7da', 
-                            color: '#721c24', 
-                            borderRadius: '8px', 
-                            marginBottom: '20px' 
+                        <div style={{
+                            padding: '15px',
+                            backgroundColor: '#f8d7da',
+                            color: '#721c24',
+                            borderRadius: '8px',
+                            marginBottom: '20px'
                         }}>
                             {error}
                         </div>
@@ -155,10 +160,10 @@ function ContactPage() {
                                 value={formData.name}
                                 onChange={handleChange}
                                 required
-                                style={{ 
-                                    width: '100%', 
-                                    padding: '12px', 
-                                    borderRadius: '8px', 
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    borderRadius: '8px',
                                     border: '1px solid #ddd',
                                     fontSize: '16px'
                                 }}
@@ -174,10 +179,10 @@ function ContactPage() {
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                style={{ 
-                                    width: '100%', 
-                                    padding: '12px', 
-                                    borderRadius: '8px', 
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    borderRadius: '8px',
                                     border: '1px solid #ddd',
                                     fontSize: '16px'
                                 }}
@@ -192,10 +197,10 @@ function ContactPage() {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                style={{ 
-                                    width: '100%', 
-                                    padding: '12px', 
-                                    borderRadius: '8px', 
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    borderRadius: '8px',
                                     border: '1px solid #ddd',
                                     fontSize: '16px'
                                 }}
@@ -211,10 +216,10 @@ function ContactPage() {
                                 value={formData.subject}
                                 onChange={handleChange}
                                 required
-                                style={{ 
-                                    width: '100%', 
-                                    padding: '12px', 
-                                    borderRadius: '8px', 
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    borderRadius: '8px',
                                     border: '1px solid #ddd',
                                     fontSize: '16px'
                                 }}
@@ -230,10 +235,10 @@ function ContactPage() {
                                 onChange={handleChange}
                                 required
                                 rows="5"
-                                style={{ 
-                                    width: '100%', 
-                                    padding: '12px', 
-                                    borderRadius: '8px', 
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    borderRadius: '8px',
                                     border: '1px solid #ddd',
                                     fontSize: '16px',
                                     fontFamily: 'inherit'

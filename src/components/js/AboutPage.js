@@ -4,6 +4,10 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 function AboutPage() {
+    React.useEffect(() => {
+        document.title = 'About Us - Mufu Catfish Farm';
+    }, []);
+
     return (
         <div className="about-page">
             <header className="about-header">

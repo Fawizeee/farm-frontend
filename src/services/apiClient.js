@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an axios instance with default config
 // Set REACT_APP_API_URL in your .env file
-const baseURL = process.env.REACT_APP_API_URL || 'https://farm-backend-eta.vercel.app/';
+const baseURL = "http://10.117.190.254:8000" || 'https://farm-backend-eta.vercel.app/';
 console.log('API Client initialized with baseURL:', baseURL);
 
 const apiClient = axios.create({
@@ -22,15 +22,15 @@ apiClient.interceptors.request.use(
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
-        
+
         // If data is FormData, remove Content-Type header to let browser set it with boundary
         if (config.data instanceof FormData) {
             delete config.headers['Content-Type'];
         }
-        
+
         // Debug logging
         console.log('API Request:', config.method?.toUpperCase(), config.url, 'Full URL:', config.baseURL + config.url);
-        
+
         return config;
     },
     (error) => {

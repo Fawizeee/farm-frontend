@@ -15,18 +15,7 @@ function Navbar({ cartCount }) {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    const handleMouseEnter = () => {
-        // Only use hover on desktop (non-touch devices)
-        if (window.innerWidth > 768) {
-            setIsMenuOpen(true);
-        }
-    };
 
-    const handleMouseLeave = () => {
-        if (window.innerWidth > 768) {
-            setIsMenuOpen(false);
-        }
-    };
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -57,8 +46,6 @@ function Navbar({ cartCount }) {
                 <div
                     ref={dropdownRef}
                     className="navbar-dropdown"
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
                 >
                     <button
                         className="dropdown-toggle"

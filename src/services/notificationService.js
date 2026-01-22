@@ -1,4 +1,4 @@
-import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, isSupported, deleteToken } from 'firebase/messaging';
 import app from '../config/firebase';
 import apiClient from './apiClient';
 import { trackNotificationClick } from './adminService';
@@ -75,7 +75,7 @@ export const requestNotificationPermission = async () => {
  */
 export const getFCMToken = async () => {
   const messagingInstance = await getMessagingInstance();
-  
+
   if (!messagingInstance) {
     console.warn('Firebase messaging is not initialized');
     return null;
@@ -84,18 +84,18 @@ export const getFCMToken = async () => {
   try {
     console.log('Attempting to get FCM token...');
     console.log('VAPID Key configured:', VAPID_KEY && VAPID_KEY !== 'YOUR_VAPID_KEY');
-    
-    const currentToken = await getToken(messagingInstance, { 
+
+    const currentToken = await getToken(messagingInstance, {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: await navigator.serviceWorker.ready
     });
-    
+
     if (currentToken) {
-      console.log('✅ FCM Token generated successfully!');
-      console.log('FCM Token (full):', currentToken);
-      console.log('FCM Token (first 20 chars):', currentToken.substring(0, 20) + '...');
-      console.log('FCM Token length:', currentToken.length);
-      return currentToken;
+      // console.log('✅ FCM Token generated successfully!');
+      // console.log('FCM Token (full):', currentToken);
+      // console.log('FCM Token (first 20 chars):', currentToken.substring(0, 20) + '...');
+      // console.log('FCM Token length:', currentToken.length);
+      return currentToken || null;
     } else {
       console.warn('❌ No registration token available. Request permission to generate one.');
       return null;
@@ -120,7 +120,7 @@ export const saveTokenToBackend = async (token) => {
   try {
     console.log('🔄 Attempting to save FCM token to backend...');
     console.log('Token to save:', token ? `${token.substring(0, 20)}...` : 'null');
-    
+
     // Get device ID from localStorage or generate one
     const deviceId = localStorage.getItem('deviceId') || generateDeviceId();
     localStorage.setItem('deviceId', deviceId);
@@ -135,6 +135,7 @@ export const saveTokenToBackend = async (token) => {
     if (response.status === 200 || response.status === 201) {
       console.log('✅ Token saved to backend successfully!');
       console.log('Response:', response.data);
+      localStorage.setItem('mufu_push_subscribed', 'true');
       return true;
     }
     console.warn('⚠️ Unexpected response status:', response.status);
@@ -157,7 +158,7 @@ export const saveAdminTokenToBackend = async (token) => {
   try {
     console.log('🔄 Attempting to save admin FCM token to backend...');
     console.log('Token to save:', token ? `${token.substring(0, 20)}...` : 'null');
-    
+
     // Get device ID from localStorage or generate one
     const deviceId = localStorage.getItem('deviceId') || generateDeviceId();
     localStorage.setItem('deviceId', deviceId);
@@ -172,6 +173,8 @@ export const saveAdminTokenToBackend = async (token) => {
     if (response.status === 200 || response.status === 201) {
       console.log('✅ Admin token saved to backend successfully!');
       console.log('Response:', response.data);
+      // Admin subscription implies regular subscription too usually, or at least active
+      localStorage.setItem('mufu_push_subscribed', 'true');
       return true;
     }
     console.warn('⚠️ Unexpected response status:', response.status);
@@ -181,6 +184,49 @@ export const saveAdminTokenToBackend = async (token) => {
     console.error('Error response:', error.response?.data);
     console.error('Error status:', error.response?.status);
     console.error('Error message:', error.message);
+    return false;
+  }
+};
+
+/**
+ * Unsubscribe from notifications
+ * @param {string} token - FCM token to unsubscribe
+ * @returns {Promise<boolean>} - Returns true if unsubscribed successfully
+ */
+export const unsubscribeFromNotifications = async (token) => {
+  try {
+    console.log('🔄 Attempting to unsubscribe from notifications...');
+    console.log('Token to unsubscribe:', token ? `${token.substring(0, 20)}...` : 'null');
+
+    // Use token as query param as per backend implementation
+    const response = await apiClient.delete('/api/notifications/unsubscribe', {
+      params: { token },
+    });
+
+    if (response.status === 200) {
+      console.log('✅ Unsubscribed successfully form backend!');
+
+      localStorage.removeItem('mufu_push_subscribed');
+
+      // Also delete from Firebase if possible
+      try {
+        const messagingInstance = await getMessagingInstance();
+        if (messagingInstance) {
+          // Note: deleteToken is imported from firebase/messaging
+          await deleteToken(messagingInstance);
+          console.log('✅ Firebase token deleted locally');
+        }
+      } catch (fbError) {
+        console.warn('⚠️ Could not delete firebase token locally:', fbError);
+        // We still return true because backend unsubscribe was successful
+      }
+
+      return true;
+    }
+    console.warn('⚠️ Unexpected response status:', response.status);
+    return false;
+  } catch (error) {
+    console.error('❌ Error unsubscribing:', error);
     return false;
   }
 };
@@ -223,18 +269,11 @@ export const initializeNotifications = async () => {
 
   // Check if user has already granted permission
   if (Notification.permission === 'granted') {
-    console.log('📱 Notification permission already granted, attempting to get FCM token...');
-    try {
-      const token = await getFCMToken();
-      if (token) {
-        console.log('📤 Token obtained, saving to backend...');
-        await saveTokenToBackend(token);
-      } else {
-        console.warn('⚠️ No token obtained, cannot save to backend');
-      }
-    } catch (error) {
-      console.warn('Failed to get FCM token (Firebase may not be configured):', error);
-    }
+    console.log('📱 Notification permission already granted');
+    // We do NOT auto-save token here anymore. 
+    // If the user previously unsubscribed (deleted backend token), we don't want to auto-resubscribe them
+    // just because they refreshed the page.
+    // They must click 'Subscribe' in the modal/footer to re-establish the backend link.
   } else {
     console.log('ℹ️ Notification permission not granted yet. Status:', Notification.permission);
   }
@@ -245,7 +284,7 @@ export const initializeNotifications = async () => {
     if (messagingInstance) {
       onMessage(messagingInstance, (payload) => {
         console.log('Message received in foreground:', payload);
-        
+
         // Show notification
         if (payload.notification) {
           showNotification(
@@ -297,9 +336,9 @@ export const showNotification = (title, body, icon = '/logo192.png', data = null
           // Continue even if tracking fails
         }
       }
-      
+
       window.focus();
-      
+
       // Check if this is an admin notification with redirect URL
       if (data && (data.is_admin === 'true' || data.redirect_url)) {
         const redirectUrl = data.redirect_url || '/admin/orders';
@@ -308,7 +347,7 @@ export const showNotification = (title, body, icon = '/logo192.png', data = null
         // Regular user notification - redirect to home
         window.location.href = '/';
       }
-      
+
       notification.close();
     };
   }
@@ -328,7 +367,7 @@ const generateDeviceId = () => {
  */
 export const isMobileDevice = () => {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-         (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+    (window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
 };
 
 /**
@@ -338,13 +377,13 @@ export const isMobileDevice = () => {
 export const isNotificationSupported = () => {
   // Basic notification support check
   const hasNotification = 'Notification' in window;
-  
+
   // For mobile, we can still show the modal even without service worker
   // The browser's native notification API will work
   if (isMobileDevice()) {
     return hasNotification;
   }
-  
+
   // For desktop, prefer service worker support for better FCM integration
   return hasNotification && 'serviceWorker' in navigator;
 };

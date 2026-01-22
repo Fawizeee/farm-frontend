@@ -13,6 +13,14 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [orderComplete, setOrderComplete] = useState(false);
 
+    // Lock body scroll when modal is open
+    React.useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, []);
+
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -40,7 +48,7 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
         try {
             // Get device ID from cookie
             const deviceId = getDeviceId();
-            
+
             // Prepare FormData for file upload
             const formData = new FormData();
             formData.append('customer_name', customerName);
@@ -50,11 +58,11 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
                 product_id: item.id,
                 quantity: item.quantity
             }))));
-            
+
             if (deviceId) {
                 formData.append('device_id', deviceId);
             }
-            
+
             // Append file if selected
             if (paymentProof) {
                 formData.append('payment_proof', paymentProof);

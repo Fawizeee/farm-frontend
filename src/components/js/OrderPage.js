@@ -39,7 +39,9 @@ function OrderPage({ cart, setCart, pendingOrders: localPendingOrders, addPendin
     const [dbPendingOrders, setDbPendingOrders] = useState([]);
     const [loadingOrders, setLoadingOrders] = useState(true);
 
+
     useEffect(() => {
+        document.title = 'Order - Mufu Catfish Farm';
         const fetchProducts = async () => {
             try {
                 setLoading(true);
@@ -314,7 +316,7 @@ function OrderPage({ cart, setCart, pendingOrders: localPendingOrders, addPendin
                     <div className="no-pending-orders">
                         <span className="no-orders-icon"><FaClipboardList /></span>
                         <h3>No Orders</h3>
-                        <p>Your orders will appear here</p>
+                        <p>Your order history will appear here</p>
                     </div>
                 )}
             </div>
