@@ -47,10 +47,10 @@ function Footer() {
                     <div className="footer-section">
                         <h3>Connect With Us</h3>
                         <div className="social-icons">
-                            <a href="#" className="social-icon"><FaFacebookF /></a>
-                            <a href="#" className="social-icon"><FaTwitter /></a>
-                            <a href="#" className="social-icon"><FaInstagram /></a>
-                            <a href="#" className="social-icon"><FaWhatsapp /></a>
+                            <a href="https://www.facebook.com" className="social-icon" target="_blank" rel="noopener noreferrer"><FaFacebookF /></a>
+                            <a href="https://twitter.com" className="social-icon" target="_blank" rel="noopener noreferrer"><FaTwitter /></a>
+                            <a href="https://www.instagram.com" className="social-icon" target="_blank" rel="noopener noreferrer"><FaInstagram /></a>
+                            <a href="https://wa.me/" className="social-icon" target="_blank" rel="noopener noreferrer"><FaWhatsapp /></a>
                         </div>
                     </div>
                 </div>

@@ -114,3 +114,4 @@ test/
 *.test.jsx
 *.test.ts
 *.test.tsx
+.agent/

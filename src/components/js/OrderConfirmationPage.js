@@ -6,7 +6,7 @@ import '../css/OrderConfirmationPage.css';
 
 function OrderConfirmationPage() {
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const reference = searchParams.get('reference');
     const [status, setStatus] = useState('verifying'); // verifying, success, failed
     const [message, setMessage] = useState('Verifying your payment...');
