@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import Skeleton from './Skeleton';
 import '../css/OrderPage.css';
 import CartModal from './CartModal';
 import { GiFishBucket, GiFire, GiWaterDrop } from 'react-icons/gi';
@@ -182,8 +183,21 @@ function OrderPage({ cart, setCart, pendingOrders: localPendingOrders, addPendin
 
             <div className="catalogue-container">
                 {loading && (
-                    <div style={{ textAlign: 'center', padding: '40px', fontSize: '18px' }}>
-                        Loading products...
+                    <div className="catalogue-grid">
+                        {[1, 2, 3, 4, 5, 6].map(n => (
+                            <div key={n} className="catalogue-card">
+                                <div className="catalogue-image">
+                                    <Skeleton type="rect" height="100%" style={{ minHeight: '180px' }} />
+                                </div>
+                                <div className="catalogue-info">
+                                    <Skeleton type="title" width="70%" />
+                                    <Skeleton type="text" />
+                                    <Skeleton type="text" width="90%" />
+                                    <Skeleton type="text" width="40%" style={{ marginTop: '10px', marginBottom: '15px' }} />
+                                    <Skeleton type="rect" height="40px" width="100%" style={{ borderRadius: '8px' }} />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 )}
 
@@ -270,9 +284,23 @@ function OrderPage({ cart, setCart, pendingOrders: localPendingOrders, addPendin
             {/* Pending Orders Box */}
             <div id="pending-orders" className={`pending-orders-box ${allPendingOrders.length === 0 && !loadingOrders ? 'empty' : ''}`}>
                 {loadingOrders ? (
-                    <div className="no-pending-orders">
-                        <span className="no-orders-icon"><FaHourglass /></span>
-                        <h3>Loading Orders...</h3>
+                    <div className="pending-orders-list">
+                        <h3 style={{ padding: '0 20px', marginBottom: '15px' }}>My Orders</h3>
+                        {[1, 2, 3].map(n => (
+                            <div key={n} className="pending-order-item">
+                                <div className="pending-order-info" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                    <Skeleton type="text" width="100px" />
+                                    <Skeleton type="text" width="80px" />
+                                </div>
+                                <div className="pending-order-details" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+                                    <Skeleton type="text" width="60px" />
+                                    <Skeleton type="text" width="70px" />
+                                </div>
+                                <div className="pending-order-status">
+                                    <Skeleton type="rect" height="24px" width="140px" style={{ borderRadius: '12px' }} />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ) : allPendingOrders.length > 0 ? (
                     <>

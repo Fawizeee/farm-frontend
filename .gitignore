@@ -105,3 +105,12 @@ ui-debug.log
 # Temporary folders
 tmp/
 temp/
+
+# Docs and Tests
+docs/
+tests/
+test/
+*.test.js
+*.test.jsx
+*.test.ts
+*.test.tsx

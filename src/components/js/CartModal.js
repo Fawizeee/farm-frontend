@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import '../css/CartModal.css';
-import { FaCheck, FaCheckCircle } from 'react-icons/fa';
+import { FaCheck, FaCheckCircle, FaCreditCard, FaUniversity } from 'react-icons/fa';
 import { createOrder } from '../../services/orderService';
-import { getDeviceId } from '../../utils/deviceCookie';
+import { initializePayment } from '../../services/paymentService';
+import { getDeviceId, getDeviceIdFromStorage } from '../../utils/deviceCookie';
 
 function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
     const [showCheckout, setShowCheckout] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('paystack'); // 'paystack' or 'transfer'
     const [paymentProof, setPaymentProof] = useState(null);
     const [customerName, setCustomerName] = useState('');
+    const [customerEmail, setCustomerEmail] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
     const [deliveryAddress, setDeliveryAddress] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,8 +49,8 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
         setIsSubmitting(true);
 
         try {
-            // Get device ID from cookie
-            const deviceId = getDeviceId();
+            // Get device ID from storage (more reliable than cookie)
+            const deviceId = getDeviceIdFromStorage() || getDeviceId();
 
             // Prepare FormData for file upload
             const formData = new FormData();
@@ -63,13 +66,40 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
                 formData.append('device_id', deviceId);
             }
 
-            // Append file if selected
-            if (paymentProof) {
+            // Append file if selected (only for transfer)
+            if (paymentMethod === 'transfer' && paymentProof) {
                 formData.append('payment_proof', paymentProof);
             }
 
+            // Append payment method
+            formData.append('payment_method', paymentMethod);
+
             // Submit order to backend
             const createdOrder = await createOrder(formData);
+
+            if (paymentMethod === 'paystack') {
+                // Initialize Paystack payment
+                try {
+                    const paymentData = {
+                        email: customerEmail,
+                        amount: totalPrice,
+                        order_id: createdOrder.id,
+                        callback_url: `${window.location.origin}/order-confirmation` // Or verify endpoint
+                    };
+                    const paystackResponse = await initializePayment(paymentData);
+                    console.log('Paystack Response:', paystackResponse);
+
+
+                    // Redirect to Paystack
+                    if (paystackResponse.authorization_url) {
+                        window.location.href = paystackResponse.authorization_url;
+                        return; // Don't show success modal yet, let them go to payment
+                    }
+                } catch (paymentError) {
+                    console.error("Paystack Error:", paymentError);
+                    alert("Order created but payment initialization failed. Please contact support.");
+                }
+            }
 
             // Format order for local state
             const newOrder = {
@@ -181,26 +211,48 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
                             </div>
                         </div>
 
-                        <div className="payment-info">
-                            <h3>Payment Details</h3>
-                            <div className="bank-details">
-                                <div className="bank-row">
-                                    <span className="bank-label">Bank Name:</span>
-                                    <span className="bank-value">Access Bank</span>
-                                </div>
-                                <div className="bank-row">
-                                    <span className="bank-label">Account Number:</span>
-                                    <span className="bank-value account-number">0123456789</span>
-                                </div>
-                                <div className="bank-row">
-                                    <span className="bank-label">Account Name:</span>
-                                    <span className="bank-value">Mufu Catfish Farm</span>
-                                </div>
+                        <div className="form-group">
+                            <label>Payment Method</label>
+                            <div className="payment-methods">
+                                <button
+                                    type="button"
+                                    className={`payment-method-btn ${paymentMethod === 'paystack' ? 'active' : ''}`}
+                                    onClick={() => setPaymentMethod('paystack')}
+                                >
+                                    <FaCreditCard /> Paystack
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`payment-method-btn ${paymentMethod === 'transfer' ? 'active' : ''}`}
+                                    onClick={() => setPaymentMethod('transfer')}
+                                >
+                                    <FaUniversity /> Bank Transfer
+                                </button>
                             </div>
-                            <p className="payment-note">
-                                Please transfer the exact amount and upload proof of payment below.
-                            </p>
                         </div>
+
+                        {paymentMethod === 'transfer' && (
+                            <div className="payment-info">
+                                <h3>Bank Transfer Details</h3>
+                                <div className="bank-details">
+                                    <div className="bank-row">
+                                        <span className="bank-label">Bank Name:</span>
+                                        <span className="bank-value">Access Bank</span>
+                                    </div>
+                                    <div className="bank-row">
+                                        <span className="bank-label">Account Number:</span>
+                                        <span className="bank-value account-number">0123456789</span>
+                                    </div>
+                                    <div className="bank-row">
+                                        <span className="bank-label">Account Name:</span>
+                                        <span className="bank-value">Mufu Catfish Farm</span>
+                                    </div>
+                                </div>
+                                <p className="payment-note">
+                                    Please transfer the exact amount and upload proof of payment below.
+                                </p>
+                            </div>
+                        )}
 
                         <div className="form-group">
                             <label>Your Name *</label>
@@ -212,6 +264,19 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
                                 required
                             />
                         </div>
+
+                        {paymentMethod === 'paystack' && (
+                            <div className="form-group">
+                                <label>Email Address *</label>
+                                <input
+                                    type="email"
+                                    value={customerEmail}
+                                    onChange={(e) => setCustomerEmail(e.target.value)}
+                                    placeholder="Enter your email"
+                                    required
+                                />
+                            </div>
+                        )}
 
                         <div className="form-group">
                             <label>Phone Number *</label>
@@ -237,25 +302,27 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
                             <small style={{ color: '#666', fontStyle: 'italic' }}>Delivery service coming soon</small>
                         </div>
 
-                        <div className="form-group">
-                            <label>Upload Payment Proof *</label>
-                            <div className="file-upload">
-                                <input
-                                    type="file"
-                                    accept="image/*,.pdf"
-                                    onChange={handleFileUpload}
-                                    id="payment-proof"
-                                    required
-                                />
-                                <label htmlFor="payment-proof" className="file-upload-label">
-                                    {paymentProof ? (
-                                        <span className="file-selected"><FaCheck /> {paymentProof.name}</span>
-                                    ) : (
-                                        <span>Click to upload receipt or screenshot</span>
-                                    )}
-                                </label>
+                        {paymentMethod === 'transfer' && (
+                            <div className="form-group">
+                                <label>Upload Payment Proof *</label>
+                                <div className="file-upload">
+                                    <input
+                                        type="file"
+                                        accept="image/*,.pdf"
+                                        onChange={handleFileUpload}
+                                        id="payment-proof"
+                                        required={paymentMethod === 'transfer'}
+                                    />
+                                    <label htmlFor="payment-proof" className="file-upload-label">
+                                        {paymentProof ? (
+                                            <span className="file-selected"><FaCheck /> {paymentProof.name}</span>
+                                        ) : (
+                                            <span>Click to upload receipt or screenshot</span>
+                                        )}
+                                    </label>
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         <div className="checkout-actions">
                             <button
@@ -270,7 +337,7 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
                                 className="submit-order-btn"
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? 'Submitting...' : 'Submit Order'}
+                                {isSubmitting ? 'Processing...' : (paymentMethod === 'paystack' ? 'Pay Now' : 'Submit Order')}
                             </button>
                         </div>
                     </form>

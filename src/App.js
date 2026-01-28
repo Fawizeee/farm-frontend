@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import './components/css/App.css';
 import Navbar from './components/js/Navbar';
 import HomePage from './components/js/HomePage';
@@ -14,6 +14,7 @@ import AdminOrdersPage from './components/js/AdminOrdersPage';
 import AddProduct from './components/js/AddProduct';
 import EditProductsPage from './components/js/EditProductsPage';
 import NotificationAnalyticsPage from './components/js/NotificationAnalyticsPage';
+import OrderConfirmationPage from './components/js/OrderConfirmationPage';
 import { initializeDeviceId } from './utils/deviceCookie';
 import NotificationPermissionModal from './components/js/NotificationPermissionModal';
 import {
@@ -24,7 +25,10 @@ import {
 } from './services/notificationService';
 import './utils/testNotifications'; // Import test utilities
 
-function App() {
+// Create a wrapper component that can use useLocation
+function AppContent() {
+  const location = useLocation();
+
   // Load cart from localStorage on mount
   const [cart, setCart] = useState(() => {
     try {
@@ -55,6 +59,12 @@ function App() {
   // Initialize notifications and check if modal should be shown
   useEffect(() => {
     const setupNotifications = async () => {
+      // Don't show notification modal on admin login page
+      if (location.pathname === '/admin') {
+        console.log('On admin login page, skipping notification modal');
+        return;
+      }
+
       console.log('Setting up notifications...');
       console.log('User agent:', navigator.userAgent);
       console.log('Is mobile:', /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
@@ -136,7 +146,7 @@ function App() {
     };
 
     setupNotifications();
-  }, []);
+  }, [location.pathname]); // Re-run when location changes
 
   const getTotalItems = () => {
     return cart.reduce((total, item) => total + item.quantity, 0);
@@ -157,45 +167,53 @@ function App() {
   }, [showNotificationModal]);
 
   return (
-    <Router>
-      <div className="App">
-        {showNotificationModal && (
-          <NotificationPermissionModal
-            onClose={() => {
-              console.log('Modal closed');
-              setShowNotificationModal(false);
-            }}
-            onPermissionGranted={handleNotificationPermissionGranted}
+    <div className="App">
+      {showNotificationModal && (
+        <NotificationPermissionModal
+          onClose={() => {
+            console.log('Modal closed');
+            setShowNotificationModal(false);
+          }}
+          onPermissionGranted={handleNotificationPermissionGranted}
+        />
+      )}
+      <Routes>
+        <Route path="/" element={
+          <>
+            <Navbar cartCount={getTotalItems()} />
+            <HomePage />
+          </>
+        } />
+        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin/home" element={<AdminHome orders={pendingOrders} />} />
+        <Route path="/admin/orders" element={<AdminOrdersPage orders={pendingOrders} />} />
+        <Route path="/admin/products/add" element={<AddProduct />} />
+        <Route path="/admin/products/edit" element={<EditProductsPage />} />
+        <Route path="/admin/notifications/analytics" element={<NotificationAnalyticsPage />} />
+        <Route path="/order" element={
+          <OrderPage
+            cart={cart}
+            setCart={setCart}
+            pendingOrders={pendingOrders}
+            addPendingOrder={addPendingOrder}
           />
-        )}
-        <Routes>
-          <Route path="/" element={
-            <>
-              <Navbar cartCount={getTotalItems()} />
-              <HomePage />
-            </>
-          } />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/home" element={<AdminHome orders={pendingOrders} />} />
-          <Route path="/admin/orders" element={<AdminOrdersPage orders={pendingOrders} />} />
-          <Route path="/admin/products/add" element={<AddProduct />} />
-          <Route path="/admin/products/edit" element={<EditProductsPage />} />
-          <Route path="/admin/notifications/analytics" element={<NotificationAnalyticsPage />} />
-          <Route path="/order" element={
-            <OrderPage
-              cart={cart}
-              setCart={setCart}
-              pendingOrders={pendingOrders}
-              addPendingOrder={addPendingOrder}
-            />
-          } />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/about" element={<AboutPage />} />
-        </Routes>
-        <Footer />
-      </div>
+        } />
+        <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/about" element={<AboutPage />} />
+      </Routes>
+      <Footer />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }
 
 export default App;
+

@@ -1,0 +1,39 @@
+/* Payment Methods */
+.payment-methods {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+.payment-method-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.payment-method-btn:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--text-secondary);
+}
+
+.payment-method-btn.active {
+    background-color: rgba(14, 165, 233, 0.1);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.payment-method-btn svg {
+    font-size: 1.1rem;
+}

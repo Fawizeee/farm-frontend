@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an axios instance with default config
 // Set REACT_APP_API_URL in your .env file
-const baseURL = "http://10.117.190.254:8000" || 'https://farm-backend-eta.vercel.app/';
+const baseURL = "http://10.37.96.254:5000" || 'https://farm-backend-eta.vercel.app/';
 console.log('API Client initialized with baseURL:', baseURL);
 
 const apiClient = axios.create({
@@ -49,7 +49,13 @@ apiClient.interceptors.response.use(
         if (error.response && error.response.status === 401) {
             // Clear local storage and redirect to login if necessary
             localStorage.removeItem('authToken');
-            window.location.href = '/login'; // Uncomment to auto-redirect
+
+            // Only redirect if not already on admin login page
+            const currentPath = window.location.pathname;
+            if (currentPath !== '/admin') {
+                window.location.href = '/login'; // Redirect regular users to login
+            }
+            // If on /admin, don't redirect - let the admin login page handle the error
         }
 
         // Enhanced error logging

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Skeleton from './Skeleton';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaTrash, FaBox, FaSpinner } from 'react-icons/fa';
 import '../css/EditProductsPage.css';
@@ -31,7 +32,7 @@ const EditProductsPage = () => {
 
     const handleDelete = async (productId, e) => {
         e.stopPropagation(); // Prevent navigation when clicking delete button
-        
+
         if (!window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
             return;
         }
@@ -66,7 +67,57 @@ const EditProductsPage = () => {
 
             <div className="products-table-container">
                 {loading ? (
-                    <div style={{ textAlign: 'center', padding: '40px' }}>Loading products...</div>
+                    <>
+                        {/* Desktop Skeleton */}
+                        <table className="products-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Price</th>
+                                    <th>Unit</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[1, 2, 3, 4, 5].map((n) => (
+                                    <tr key={n}>
+                                        <td><Skeleton type="text" width="40px" /></td>
+                                        <td><Skeleton type="text" width="120px" /></td>
+                                        <td><Skeleton type="text" width="200px" /></td>
+                                        <td><Skeleton type="text" width="80px" /></td>
+                                        <td><Skeleton type="text" width="40px" /></td>
+                                        <td><Skeleton type="rect" height="24px" width="100px" style={{ borderRadius: '12px' }} /></td>
+                                        <td><Skeleton type="rect" height="32px" width="80px" style={{ borderRadius: '6px' }} /></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        {/* Mobile Skeleton */}
+                        <div className="products-mobile-view">
+                            {[1, 2, 3].map((n) => (
+                                <div key={n} className="product-card-mobile">
+                                    <div className="product-card-header" style={{ marginBottom: '10px' }}>
+                                        <div className="product-card-info" style={{ flex: 1 }}>
+                                            <Skeleton type="text" width="100px" style={{ marginBottom: '5px' }} />
+                                            <Skeleton type="text" width="60px" />
+                                        </div>
+                                        <Skeleton type="rect" height="24px" width="80px" style={{ borderRadius: '12px' }} />
+                                    </div>
+                                    <div className="product-description-mobile" style={{ marginBottom: '15px' }}>
+                                        <Skeleton type="text" width="90%" />
+                                        <Skeleton type="text" width="70%" />
+                                    </div>
+                                    <div className="product-card-actions">
+                                        <Skeleton type="rect" height="36px" width="100%" style={{ borderRadius: '6px' }} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 ) : products.length > 0 ? (
                     <>
                         {/* Desktop Table View */}
@@ -84,8 +135,8 @@ const EditProductsPage = () => {
                             </thead>
                             <tbody>
                                 {products.map((product) => (
-                                    <tr 
-                                        key={product.id} 
+                                    <tr
+                                        key={product.id}
                                         onClick={() => handleProductClick(product.id)}
                                         style={{ cursor: 'pointer' }}
                                     >
@@ -133,8 +184,8 @@ const EditProductsPage = () => {
                         {/* Mobile Card View */}
                         <div className="products-mobile-view">
                             {products.map((product) => (
-                                <div 
-                                    key={product.id} 
+                                <div
+                                    key={product.id}
                                     className="product-card-mobile"
                                     onClick={() => handleProductClick(product.id)}
                                 >

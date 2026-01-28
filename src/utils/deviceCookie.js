@@ -49,25 +49,30 @@ export const initializeDeviceId = async () => {
     try {
         // Check if device ID already exists in localStorage first
         let deviceId = getDeviceIdFromStorage();
-        
+
         // If not in localStorage, check cookie
         if (!deviceId) {
             deviceId = getDeviceId();
         }
-        
+
+        // If found in localStorage, ensure it's also in cookie
+        if (getDeviceIdFromStorage() && !getDeviceId()) {
+            setDeviceId(deviceId);
+        }
+
         // If still not found, get or create from backend
         if (!deviceId) {
             // Get or create device ID from backend
             const response = await apiClient.get('/api/device-id');
             deviceId = response.data.device_id;
-            
+
             // Set cookie (backend also sets it, but we set it here too for consistency)
             setDeviceId(deviceId);
         }
-        
+
         // Always store in localStorage for getUserOrders to use
         setDeviceIdInStorage(deviceId);
-        
+
         return deviceId;
     } catch (error) {
         console.error('Error initializing device ID:', error);

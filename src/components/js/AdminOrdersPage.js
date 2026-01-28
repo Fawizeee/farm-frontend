@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Skeleton from './Skeleton';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaClipboardList, FaCheck, FaTimes, FaSpinner, FaReceipt, FaTimesCircle, FaSearch, FaCalendar } from 'react-icons/fa';
 import '../css/AdminOrdersPage.css';
@@ -47,7 +48,7 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
         try {
             setUpdating(prev => ({ ...prev, [orderId]: true }));
             await updateOrderStatus(orderId, newStatus);
-            setOrders(orders.map(order => 
+            setOrders(orders.map(order =>
                 order.id === orderId ? { ...order, status: newStatus } : order
             ));
         } catch (error) {
@@ -61,7 +62,7 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
     const handleApprove = (order) => {
         const normalizedStatus = normalizeStatus(order.status);
         let newStatus = 'confirmed';
-        
+
         // Determine next status based on current status
         if (normalizedStatus === 'pending') {
             newStatus = 'confirmed';
@@ -75,7 +76,7 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
             // Already completed, reset to confirmed
             newStatus = 'confirmed';
         }
-        
+
         handleStatusChange(order.id, newStatus);
     };
 
@@ -152,7 +153,7 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
                             onChange={(e) => setSelectedDate(e.target.value)}
                         />
                     </div>
-                    
+
                     <div className="search-bar-wrapper">
                         <FaSearch className="search-icon" />
                         <input
@@ -173,13 +174,13 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
                         )}
                     </div>
                 </div>
-                
+
                 {(searchQuery || selectedDate) && (
                     <div className="search-results-info">
                         {orders.length === 0 ? (
                             <span>
-                                {searchQuery 
-                                    ? `No orders found matching "${searchQuery}"` 
+                                {searchQuery
+                                    ? `No orders found matching "${searchQuery}"`
                                     : `No orders found for ${new Date(selectedDate).toLocaleDateString()}`}
                             </span>
                         ) : (
@@ -195,7 +196,60 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
 
             <div className="orders-table-container">
                 {loading ? (
-                    <div style={{ textAlign: 'center', padding: '40px' }}>Loading orders...</div>
+                    <>
+                        {/* Desktop Skeleton */}
+                        <table className="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[1, 2, 3, 4, 5].map((n) => (
+                                    <tr key={n}>
+                                        <td><Skeleton type="text" width="50px" /></td>
+                                        <td><Skeleton type="text" width="100px" /></td>
+                                        <td>
+                                            <Skeleton type="text" width="120px" />
+                                            <Skeleton type="text" width="80px" style={{ marginTop: '5px' }} />
+                                        </td>
+                                        <td>
+                                            <Skeleton type="text" width="80px" />
+                                            <Skeleton type="text" width="150px" style={{ marginTop: '5px' }} />
+                                        </td>
+                                        <td><Skeleton type="text" width="80px" /></td>
+                                        <td><Skeleton type="rect" height="24px" width="100px" style={{ borderRadius: '12px' }} /></td>
+                                        <td><Skeleton type="rect" height="32px" width="150px" style={{ borderRadius: '6px' }} /></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        {/* Mobile Skeleton */}
+                        <div className="orders-mobile-view">
+                            {[1, 2, 3].map((n) => (
+                                <div key={n} className="order-card-mobile">
+                                    <div className="order-card-header" style={{ marginBottom: '15px' }}>
+                                        <div style={{ flex: 1 }}>
+                                            <Skeleton type="text" width="60%" style={{ marginBottom: '5px' }} />
+                                            <Skeleton type="text" width="40%" />
+                                        </div>
+                                        <Skeleton type="rect" height="24px" width="80px" style={{ borderRadius: '12px' }} />
+                                    </div>
+                                    <div className="order-card-actions" style={{ display: 'flex', gap: '10px' }}>
+                                        <Skeleton type="rect" height="36px" width="100%" style={{ borderRadius: '6px' }} />
+                                        <Skeleton type="rect" height="36px" width="100%" style={{ borderRadius: '6px' }} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 ) : sortedOrders.length > 0 ? (
                     <>
                         {/* Desktop Table View */}
@@ -213,7 +267,7 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
                             </thead>
                             <tbody>
                                 {sortedOrders.map((order, index) => (
-                                    <tr 
+                                    <tr
                                         key={order.id || index}
                                         className="order-row-clickable"
                                         onClick={() => handleOrderClick(order)}
@@ -283,8 +337,8 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
                         {/* Mobile Card View - Customer Only */}
                         <div className="orders-mobile-view">
                             {sortedOrders.map((order, index) => (
-                                <div 
-                                    key={order.id || index} 
+                                <div
+                                    key={order.id || index}
                                     className="order-card-mobile order-row-clickable"
                                     onClick={() => handleOrderClick(order)}
                                     style={{ cursor: 'pointer' }}
@@ -349,7 +403,7 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
                                 <FaTimesCircle />
                             </button>
                         </div>
-                        
+
                         <div className="order-modal-body">
                             <div className="order-detail-section">
                                 <h3>Customer Information</h3>
@@ -396,9 +450,9 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
                                 <h3>Payment Proof</h3>
                                 {selectedOrder.payment_proof_url ? (
                                     <div className="payment-proof-container">
-                                        <img 
-                                            src={getPaymentProofUrl(selectedOrder.payment_proof_url)} 
-                                            alt="Payment Proof" 
+                                        <img
+                                            src={getPaymentProofUrl(selectedOrder.payment_proof_url)}
+                                            alt="Payment Proof"
                                             className="payment-proof-image"
                                             onError={(e) => {
                                                 e.target.style.display = 'none';
@@ -408,9 +462,9 @@ const AdminOrdersPage = ({ orders: propOrders = [] }) => {
                                         <div className="payment-proof-error" style={{ display: 'none' }}>
                                             <FaReceipt />
                                             <p>Unable to load image</p>
-                                            <a 
-                                                href={getPaymentProofUrl(selectedOrder.payment_proof_url)} 
-                                                target="_blank" 
+                                            <a
+                                                href={getPaymentProofUrl(selectedOrder.payment_proof_url)}
+                                                target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="payment-proof-link"
                                             >

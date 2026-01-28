@@ -1,42 +1,60 @@
 :root {
-  /* Brand Colors - Earth & Water Theme */
-  --primary-color: #0F172A;
-  /* Deep Navy Blue */
-  --primary-light: #1E293B;
-  /* Lighter Navy */
-  --primary-dark: #020617;
-  /* Darkest Navy */
+  /* Aquaculture Brand Colors - Water, Nature & Trust Theme */
+  --primary-color: #0C4A6E;
+  /* Deep Water Blue - sky-900 */
+  --primary-light: #0369A1;
+  /* Ocean Blue - sky-700 */
+  --primary-dark: #082F49;
+  /* Deep Sea - sky-950 */
 
-  --accent-color: #0EA5E9;
-  /* Ocean Blue */
-  --accent-light: #38BDF8;
-  --accent-dark: #0284C7;
+  --accent-color: #06B6D4;
+  /* Vibrant Cyan - cyan-500 */
+  --accent-light: #22D3EE;
+  /* Light Cyan - cyan-400 */
+  --accent-dark: #0891B2;
+  /* Deep Cyan - cyan-600 */
 
-  --secondary-color: #10B981;
-  /* Fresh Teal (Success/Nature) */
-  --secondary-light: #34D399;
-  --secondary-dark: #059669;
+  --secondary-color: #059669;
+  /* Fresh Emerald - emerald-600 */
+  --secondary-light: #10B981;
+  /* Light Emerald - emerald-500 */
+  --secondary-dark: #047857;
+  /* Deep Emerald - emerald-700 */
+
+  /* Earth & Natural Tones */
+  --earth-color: #92400E;
+  /* Warm Brown - amber-800 */
+  --earth-light: #B45309;
+  /* Light Brown - amber-700 */
 
   /* Neutrals & Backgrounds */
-  --text-primary: #1E293B;
+  --text-primary: #0F172A;
+  /* slate-900 */
   --text-secondary: #475569;
+  /* slate-600 */
   --text-light: #94A3B8;
+  /* slate-400 */
   --text-inverse: #FFFFFF;
 
   --bg-primary: #FFFFFF;
-  --bg-secondary: #F8FAFC;
-  /* Very Light Blue-Grey */
-  --bg-tertiary: #F1F5F9;
-  --bg-dark: #0F172A;
+  --bg-secondary: #F0F9FF;
+  /* Very Light Sky Blue - sky-50 */
+  --bg-tertiary: #E0F2FE;
+  /* Light Sky Blue - sky-100 */
+  --bg-aqua: #ECFEFF;
+  /* cyan-50 */
+  --bg-dark: #0C4A6E;
 
   /* Borders & Dividers */
-  --border-color: #E2E8F0;
-  --border-hover: #CBD5E1;
+  --border-color: #E0E7FF;
+  /* indigo-100 */
+  --border-hover: #C7D2FE;
+  /* indigo-200 */
 
   /* Feedback Colors */
-  --success: #10B981;
+  --success: #059669;
   --warning: #F59E0B;
-  --error: #EF4444;
+  --error: #DC2626;
 
   /* Shadows - Soft & Modern */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -61,7 +79,7 @@
   /* 64px */
 
   /* Typography */
-  --font-heading: 'Outfit', sans-serif;
+  --font-heading: 'Poppins', sans-serif;
   --font-body: 'Inter', sans-serif;
 
   --font-size-xs: 0.75rem;

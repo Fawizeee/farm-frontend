@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Skeleton from './Skeleton';
 import { useNavigate, Link } from 'react-router-dom';
 import { FaSignOutAlt, FaChartPie, FaBell, FaBox, FaInfoCircle, FaChartLine } from 'react-icons/fa';
 import '../css/AdminHome.css';
@@ -89,7 +90,72 @@ const AdminHome = ({ orders: propOrders = [] }) => {
 
     const DashboardView = () => {
         if (loading) {
-            return <div style={{ textAlign: 'center', padding: '40px' }}>Loading dashboard...</div>;
+            return (
+                <div className="dashboard-grid">
+                    {/* Orders Skeleton */}
+                    <div className="dashboard-card">
+                        <div className="card-header">
+                            <Skeleton type="title" width="40%" />
+                        </div>
+                        <div className="card-content">
+                            <Skeleton type="text" height="40px" width="30%" style={{ marginBottom: '16px' }} />
+                            <Skeleton type="text" width="60%" style={{ marginBottom: '16px' }} />
+                            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #eee' }}>
+                                <Skeleton type="text" width="30%" style={{ marginBottom: '10px' }} />
+                                {[1, 2, 3, 4, 5].map(n => (
+                                    <div key={n} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                                        <Skeleton type="text" width="40%" />
+                                        <Skeleton type="text" width="20%" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Revenue Skeleton */}
+                    <div className="dashboard-card">
+                        <div className="card-header">
+                            <Skeleton type="title" width="50%" />
+                        </div>
+                        <div className="card-content">
+                            <Skeleton type="text" height="40px" width="40%" />
+                            <Skeleton type="text" width="50%" style={{ marginTop: '10px' }} />
+                        </div>
+                    </div>
+
+                    {/* Products Skeleton */}
+                    <div className="dashboard-card">
+                        <div className="card-header">
+                            <Skeleton type="title" width="40%" />
+                        </div>
+                        <div className="card-content">
+                            <Skeleton type="text" height="40px" width="30%" />
+                            <Skeleton type="text" width="40%" style={{ marginTop: '8px', marginBottom: '16px' }} />
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <Skeleton type="rect" height="36px" width="50%" style={{ borderRadius: '4px' }} />
+                                <Skeleton type="rect" height="36px" width="50%" style={{ borderRadius: '4px' }} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Info Skeleton */}
+                    <div className="dashboard-card">
+                        <div className="card-header">
+                            <Skeleton type="title" width="40%" />
+                        </div>
+                        <div className="card-content">
+                            <div style={{ marginBottom: '10px' }}>
+                                <Skeleton type="text" width="30%" style={{ marginBottom: '5px' }} />
+                                <Skeleton type="text" width="40%" />
+                            </div>
+                            <div>
+                                <Skeleton type="text" width="30%" style={{ marginBottom: '5px' }} />
+                                <Skeleton type="text" width="40%" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
         }
 
         return (
@@ -222,13 +288,13 @@ const AdminHome = ({ orders: propOrders = [] }) => {
 
         const handleSend = async (e) => {
             e.preventDefault();
-            
+
             // Check if notification permission is not granted
             if ('Notification' in window && Notification.permission !== 'granted') {
                 setShowAccessDeniedModal(true);
                 return;
             }
-            
+
             setSending(true);
             setShowSuccess(false);
             setShowError(false);

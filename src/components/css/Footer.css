@@ -1,11 +1,21 @@
 .footer {
-    background-color: var(--bg-dark);
-    /* Deep Navy */
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--primary-light) 100%);
     color: var(--text-inverse);
     padding: var(--spacing-3xl) 0 var(--spacing-xl);
     margin-top: auto;
     width: 100%;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid var(--accent-color);
+    position: relative;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--accent-color) 50%, transparent 100%);
 }
 
 .footer-container {
@@ -30,7 +40,7 @@
 }
 
 .footer-section p {
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.7);
     line-height: 1.6;
     font-size: var(--font-size-base);
     max-width: 300px;
@@ -46,7 +56,7 @@
 }
 
 .footer-section ul li a {
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     transition: all var(--transition-base);
     display: inline-block;
@@ -54,7 +64,7 @@
 
 .footer-section ul li a:hover {
     color: var(--accent-light);
-    transform: translateX(4px);
+    transform: translateX(6px);
 }
 
 .social-icons {
@@ -63,9 +73,10 @@
 }
 
 .social-icon {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -73,12 +84,14 @@
     color: #ffffff;
     text-decoration: none;
     transition: all var(--transition-base);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .social-icon:hover {
-    background-color: var(--accent-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+    border-color: transparent;
 }
 
 .footer-bottom {

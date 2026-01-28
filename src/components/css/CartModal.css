@@ -252,6 +252,57 @@
     border-top: 1px solid var(--border-color);
 }
 
+/* Payment Methods */
+.payment-methods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.payment-method-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: var(--spacing-md);
+    background-color: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 0.95rem;
+    height: 100%;
+}
+
+.payment-method-btn:hover {
+    border-color: var(--primary-light);
+    background-color: var(--bg-secondary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.payment-method-btn.active {
+    border-color: var(--primary-color);
+    background-color: var(--bg-tertiary);
+    color: var(--primary-color);
+    font-weight: 600;
+    box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.payment-method-btn svg {
+    font-size: 1.75rem;
+    margin-bottom: 4px;
+    color: inherit;
+    transition: transform var(--transition-fast);
+}
+
+.payment-method-btn:hover svg {
+    transform: scale(1.1);
+}
+
 /* Payment Info */
 .payment-info {
     margin-bottom: var(--spacing-xl);
