@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an axios instance with default config
 // Set REACT_APP_API_URL in your .env file
-const baseURL = "http://10.37.96.254:5000" || 'https://farm-backend-eta.vercel.app/';
+const baseURL = 'https://farm-backend-eta.vercel.app';
 console.log('API Client initialized with baseURL:', baseURL);
 
 const apiClient = axios.create({
