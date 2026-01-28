@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { verifyPayment } from '../../services/paymentService';
 import { FaCheckCircle, FaTimesCircle, FaHourglassHalf } from 'react-icons/fa';
 import '../css/OrderConfirmationPage.css';

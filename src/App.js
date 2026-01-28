@@ -20,7 +20,6 @@ import NotificationPermissionModal from './components/js/NotificationPermissionM
 import {
   initializeNotifications,
   isNotificationSupported,
-  hasNotificationPermission,
   isNotificationDenied
 } from './services/notificationService';
 import './utils/testNotifications'; // Import test utilities
