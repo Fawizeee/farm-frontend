@@ -219,14 +219,22 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
                                     className={`payment-method-btn ${paymentMethod === 'paystack' ? 'active' : ''}`}
                                     onClick={() => setPaymentMethod('paystack')}
                                 >
-                                    <FaCreditCard /> Paystack
+                                    <div className="method-icon-wrapper">
+                                        <FaCreditCard />
+                                        {paymentMethod === 'paystack' && <FaCheckCircle className="check-badge" />}
+                                    </div>
+                                    <span>Paystack</span>
                                 </button>
                                 <button
                                     type="button"
                                     className={`payment-method-btn ${paymentMethod === 'transfer' ? 'active' : ''}`}
                                     onClick={() => setPaymentMethod('transfer')}
                                 >
-                                    <FaUniversity /> Bank Transfer
+                                    <div className="method-icon-wrapper">
+                                        <FaUniversity />
+                                        {paymentMethod === 'transfer' && <FaCheckCircle className="check-badge" />}
+                                    </div>
+                                    <span>Bank Transfer</span>
                                 </button>
                             </div>
                         </div>
