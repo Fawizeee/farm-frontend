@@ -218,7 +218,7 @@ function AppContent() {
             addPendingOrder={addPendingOrder}
           />
         } />
-        <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+        <Route path="/order-confirmation" element={<OrderConfirmationPage setCart={setCart} />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutPage />} />
       </Routes>

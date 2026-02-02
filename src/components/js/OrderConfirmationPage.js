@@ -4,7 +4,7 @@ import { verifyPayment } from '../../services/paymentService';
 import { FaCheckCircle, FaTimesCircle, FaHourglassHalf } from 'react-icons/fa';
 import '../css/OrderConfirmationPage.css';
 
-function OrderConfirmationPage() {
+function OrderConfirmationPage({ setCart }) {
     const [searchParams] = useSearchParams();
     // const navigate = useNavigate();
     const reference = searchParams.get('reference');
@@ -29,6 +29,10 @@ function OrderConfirmationPage() {
                 if (response.status) {
                     setStatus('success');
                     setMessage('Payment confirmed! Your order is being processed.');
+                    // Clear cart upon successful payment verification
+                    if (setCart) {
+                        setCart([]);
+                    }
                 } else {
                     // If failed and we have retries left, wait and retry
                     if (attempts < maxAttempts) {

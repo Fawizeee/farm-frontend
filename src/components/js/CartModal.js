@@ -77,30 +77,6 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
             // Submit order to backend
             const createdOrder = await createOrder(formData);
 
-            if (paymentMethod === 'paystack') {
-                // Initialize Paystack payment
-                try {
-                    const paymentData = {
-                        email: customerEmail,
-                        amount: totalPrice,
-                        order_id: createdOrder.id,
-                        callback_url: `${window.location.origin}/order-confirmation` // Or verify endpoint
-                    };
-                    const paystackResponse = await initializePayment(paymentData);
-                    console.log('Paystack Response:', paystackResponse);
-
-
-                    // Redirect to Paystack
-                    if (paystackResponse.authorization_url) {
-                        window.location.href = paystackResponse.authorization_url;
-                        return; // Don't show success modal yet, let them go to payment
-                    }
-                } catch (paymentError) {
-                    console.error("Paystack Error:", paymentError);
-                    alert("Order created but payment initialization failed. Please contact support.");
-                }
-            }
-
             // Format order for local state
             const newOrder = {
                 id: createdOrder.id,
@@ -119,12 +95,38 @@ function CartModal({ cart, setCart, onClose, totalPrice, addPendingOrder }) {
                 status: createdOrder.status
             };
 
+            if (paymentMethod === 'paystack') {
+                // Initialize Paystack payment
+                try {
+                    const paymentData = {
+                        email: customerEmail,
+                        amount: totalPrice,
+                        order_id: createdOrder.id,
+                        callback_url: `${window.location.origin}/order-confirmation` // Or verify endpoint
+                    };
+                    const paystackResponse = await initializePayment(paymentData);
+                    console.log('Paystack Response:', paystackResponse);
+
+
+                    // Redirect to Paystack
+                    if (paystackResponse.authorization_url) {
+                        setCart([]); // Clear cart before redirecting
+                        window.location.href = paystackResponse.authorization_url;
+                        return; // Don't show success modal yet, let them go to payment
+                    }
+                } catch (paymentError) {
+                    console.error("Paystack Error:", paymentError);
+                    alert("Order created but payment initialization failed. Please contact support.");
+                }
+            }
+
             addPendingOrder(newOrder);
             setOrderComplete(true);
 
             // Clear cart after successful order
+            setCart([]);
+
             setTimeout(() => {
-                setCart([]);
                 onClose();
             }, 3000);
         } catch (error) {
