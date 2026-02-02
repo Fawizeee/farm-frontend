@@ -29,6 +29,7 @@ export const createProduct = async (productData, imageFile = null) => {
     }
     
     const response = await apiClient.post(PRODUCTS_ENDPOINT, formData, {
+        timeout: 60000, // 60s for uploads (image + backend processing/S3 can exceed 10s)
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -54,6 +55,7 @@ export const updateProduct = async (id, productData, imageFile = null) => {
     }
     
     const response = await apiClient.put(`${PRODUCTS_ENDPOINT}/${id}`, formData, {
+        timeout: 60000, // 60s for uploads (image + backend processing/S3 can exceed 10s)
         headers: {
             'Content-Type': 'multipart/form-data',
         },

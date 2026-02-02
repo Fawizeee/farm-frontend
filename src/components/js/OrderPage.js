@@ -221,7 +221,7 @@ function OrderPage({ cart, setCart, pendingOrders: localPendingOrders, addPendin
                                     {product.image_url ? (
                                         <>
                                             <img
-                                                src={`${API_BASE_URL}${product.image_url}`}
+                                                src={product.image_url.startsWith('http') ? product.image_url : `${API_BASE_URL}${product.image_url}`}
                                                 alt={product.name}
                                                 className="product-image"
                                                 onError={(e) => {

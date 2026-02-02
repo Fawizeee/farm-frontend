@@ -9,12 +9,12 @@ const AddProduct = () => {
     const [searchParams] = useSearchParams();
     const productId = searchParams.get('id');
     const isEditMode = !!productId;
-    
+
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
-    
+
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -43,7 +43,11 @@ const AddProduct = () => {
                     // Set image preview if image_url exists
                     if (product.image_url) {
                         const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-                        setImagePreview(`${apiUrl}${product.image_url}`);
+                        if (product.image_url.startsWith('http')) {
+                            setImagePreview(product.image_url);
+                        } else {
+                            setImagePreview(`${apiUrl}${product.image_url}`);
+                        }
                     } else {
                         setImagePreview(null);
                     }
@@ -77,16 +81,16 @@ const AddProduct = () => {
                 setError('Invalid file type. Please upload a JPEG, PNG, GIF, or WebP image.');
                 return;
             }
-            
+
             // Validate file size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
                 setError('Image size must be less than 5MB.');
                 return;
             }
-            
+
             setImageFile(file);
             setError('');
-            
+
             // Create preview
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -139,7 +143,7 @@ const AddProduct = () => {
             } else {
                 await createProduct(productData, imageFile);
                 setSuccess(true);
-                
+
                 // Reset form
                 setFormData({
                     name: '',
@@ -186,213 +190,213 @@ const AddProduct = () => {
                     {fetching ? (
                         <div style={{ textAlign: 'center', padding: '40px' }}>Loading product...</div>
                     ) : (
-                    <form onSubmit={handleSubmit}>
-                        {/* Product Name */}
-                        <div className="form-group">
-                            <label htmlFor="name" className="form-label">
-                                Product Name <span className="required">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                className="form-input"
-                                placeholder="e.g., Fresh Catfish"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        {/* Description */}
-                        <div className="form-group">
-                            <label htmlFor="description" className="form-label">
-                                Description <span className="required">*</span>
-                            </label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                className="form-textarea"
-                                placeholder="Describe your product..."
-                                value={formData.description}
-                                onChange={handleChange}
-                                rows="4"
-                                required
-                            />
-                        </div>
-
-                        {/* Price and Unit Row */}
-                        <div className="form-row">
+                        <form onSubmit={handleSubmit}>
+                            {/* Product Name */}
                             <div className="form-group">
-                                <label htmlFor="price" className="form-label">
-                                    Price (₦) <span className="required">*</span>
+                                <label htmlFor="name" className="form-label">
+                                    Product Name <span className="required">*</span>
                                 </label>
                                 <input
-                                    type="number"
-                                    id="price"
-                                    name="price"
+                                    type="text"
+                                    id="name"
+                                    name="name"
                                     className="form-input"
-                                    placeholder="0.00"
-                                    value={formData.price}
+                                    placeholder="e.g., Fresh Catfish"
+                                    value={formData.name}
                                     onChange={handleChange}
-                                    step="0.01"
-                                    min="0"
                                     required
                                 />
                             </div>
 
+                            {/* Description */}
                             <div className="form-group">
-                                <label htmlFor="unit" className="form-label">
-                                    Unit <span className="required">*</span>
+                                <label htmlFor="description" className="form-label">
+                                    Description <span className="required">*</span>
                                 </label>
-                                <select
-                                    id="unit"
-                                    name="unit"
-                                    className="form-input"
-                                    value={formData.unit}
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    className="form-textarea"
+                                    placeholder="Describe your product..."
+                                    value={formData.description}
                                     onChange={handleChange}
+                                    rows="4"
                                     required
-                                >
-                                    <option value="kg">Kilogram (kg)</option>
-                                    <option value="piece">Piece</option>
-                                    <option value="dozen">Dozen</option>
-                                    <option value="bag">Bag</option>
-                                </select>
+                                />
                             </div>
-                        </div>
 
-                        {/* Product Image Upload */}
-                        <div className="form-group">
-                            <label htmlFor="image" className="form-label">
-                                <FaImage style={{ marginRight: '8px' }} />
-                                Product Image
-                            </label>
-                            <input
-                                type="file"
-                                id="image"
-                                name="image"
-                                className="form-input"
-                                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                                onChange={handleImageChange}
-                            />
-                            <small className="form-hint">
-                                Upload a product image (JPEG, PNG, GIF, or WebP, max 5MB). If not provided, the icon/emoji will be displayed instead.
-                            </small>
-                            
-                            {/* Image Preview */}
-                            {imagePreview && (
-                                <div style={{ marginTop: '15px', position: 'relative', display: 'inline-block' }}>
-                                    <img 
-                                        src={imagePreview} 
-                                        alt="Product preview" 
-                                        style={{ 
-                                            maxWidth: '200px', 
-                                            maxHeight: '200px', 
-                                            borderRadius: '8px',
-                                            border: '2px solid #ddd',
-                                            objectFit: 'cover'
-                                        }} 
+                            {/* Price and Unit Row */}
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label htmlFor="price" className="form-label">
+                                        Price (₦) <span className="required">*</span>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="price"
+                                        name="price"
+                                        className="form-input"
+                                        placeholder="0.00"
+                                        value={formData.price}
+                                        onChange={handleChange}
+                                        step="0.01"
+                                        min="0"
+                                        required
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={handleRemoveImage}
-                                        style={{
-                                            position: 'absolute',
-                                            top: '5px',
-                                            right: '5px',
-                                            background: 'rgba(255, 0, 0, 0.7)',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '50%',
-                                            width: '25px',
-                                            height: '25px',
-                                            cursor: 'pointer',
-                                            fontSize: '14px',
-                                            fontWeight: 'bold'
-                                        }}
-                                        title="Remove image"
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="unit" className="form-label">
+                                        Unit <span className="required">*</span>
+                                    </label>
+                                    <select
+                                        id="unit"
+                                        name="unit"
+                                        className="form-input"
+                                        value={formData.unit}
+                                        onChange={handleChange}
+                                        required
                                     >
-                                        ×
-                                    </button>
+                                        <option value="kg">Kilogram (kg)</option>
+                                        <option value="piece">Piece</option>
+                                        <option value="dozen">Dozen</option>
+                                        <option value="bag">Bag</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Product Image Upload */}
+                            <div className="form-group">
+                                <label htmlFor="image" className="form-label">
+                                    <FaImage style={{ marginRight: '8px' }} />
+                                    Product Image
+                                </label>
+                                <input
+                                    type="file"
+                                    id="image"
+                                    name="image"
+                                    className="form-input"
+                                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                    onChange={handleImageChange}
+                                />
+                                <small className="form-hint">
+                                    Upload a product image (JPEG, PNG, GIF, or WebP, max 5MB). If not provided, the icon/emoji will be displayed instead.
+                                </small>
+
+                                {/* Image Preview */}
+                                {imagePreview && (
+                                    <div style={{ marginTop: '15px', position: 'relative', display: 'inline-block' }}>
+                                        <img
+                                            src={imagePreview}
+                                            alt="Product preview"
+                                            style={{
+                                                maxWidth: '200px',
+                                                maxHeight: '200px',
+                                                borderRadius: '8px',
+                                                border: '2px solid #ddd',
+                                                objectFit: 'cover'
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleRemoveImage}
+                                            style={{
+                                                position: 'absolute',
+                                                top: '5px',
+                                                right: '5px',
+                                                background: 'rgba(255, 0, 0, 0.7)',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '50%',
+                                                width: '25px',
+                                                height: '25px',
+                                                cursor: 'pointer',
+                                                fontSize: '14px',
+                                                fontWeight: 'bold'
+                                            }}
+                                            title="Remove image"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Icon/Emoji */}
+                            <div className="form-group">
+                                <label htmlFor="icon" className="form-label">
+                                    Product Icon/Emoji (Fallback)
+                                </label>
+                                <input
+                                    type="text"
+                                    id="icon"
+                                    name="icon"
+                                    className="form-input"
+                                    placeholder="Enter emoji or icon (e.g., 🐟, 🐠, 🦈)"
+                                    value={formData.icon}
+                                    onChange={handleChange}
+                                />
+                                <small className="form-hint">
+                                    Used as fallback if image URL is not provided or fails to load. Leave empty to use default fish icon (🐟)
+                                </small>
+                            </div>
+
+                            {/* Availability Checkbox */}
+                            <div className="form-group">
+                                <label className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        name="available"
+                                        checked={formData.available}
+                                        onChange={handleChange}
+                                    />
+                                    <span>Product is available for sale</span>
+                                </label>
+                            </div>
+
+                            {/* Error Message */}
+                            {error && (
+                                <div className="error-message">
+                                    {error}
                                 </div>
                             )}
-                        </div>
 
-                        {/* Icon/Emoji */}
-                        <div className="form-group">
-                            <label htmlFor="icon" className="form-label">
-                                Product Icon/Emoji (Fallback)
-                            </label>
-                            <input
-                                type="text"
-                                id="icon"
-                                name="icon"
-                                className="form-input"
-                                placeholder="Enter emoji or icon (e.g., 🐟, 🐠, 🦈)"
-                                value={formData.icon}
-                                onChange={handleChange}
-                            />
-                            <small className="form-hint">
-                                Used as fallback if image URL is not provided or fails to load. Leave empty to use default fish icon (🐟)
-                            </small>
-                        </div>
+                            {/* Success Message */}
+                            {success && (
+                                <div className="success-message">
+                                    Product {isEditMode ? 'updated' : 'created'} successfully! Redirecting...
+                                </div>
+                            )}
 
-                        {/* Availability Checkbox */}
-                        <div className="form-group">
-                            <label className="checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    name="available"
-                                    checked={formData.available}
-                                    onChange={handleChange}
-                                />
-                                <span>Product is available for sale</span>
-                            </label>
-                        </div>
-
-                        {/* Error Message */}
-                        {error && (
-                            <div className="error-message">
-                                {error}
+                            {/* Submit Button */}
+                            <div className="form-actions">
+                                <button
+                                    type="button"
+                                    className="btn-secondary"
+                                    onClick={() => navigate(isEditMode ? '/admin/products/edit' : '/admin/home')}
+                                    disabled={loading}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="btn-primary"
+                                    disabled={loading || fetching}
+                                >
+                                    {isEditMode ? (
+                                        <>
+                                            <FaSave style={{ marginRight: '8px' }} />
+                                            {loading ? 'Updating...' : 'Update Product'}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FaPlus style={{ marginRight: '8px' }} />
+                                            {loading ? 'Creating...' : 'Create Product'}
+                                        </>
+                                    )}
+                                </button>
                             </div>
-                        )}
-
-                        {/* Success Message */}
-                        {success && (
-                            <div className="success-message">
-                                Product {isEditMode ? 'updated' : 'created'} successfully! Redirecting...
-                            </div>
-                        )}
-
-                        {/* Submit Button */}
-                        <div className="form-actions">
-                            <button
-                                type="button"
-                                className="btn-secondary"
-                                onClick={() => navigate(isEditMode ? '/admin/products/edit' : '/admin/home')}
-                                disabled={loading}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="btn-primary"
-                                disabled={loading || fetching}
-                            >
-                                {isEditMode ? (
-                                    <>
-                                        <FaSave style={{ marginRight: '8px' }} />
-                                        {loading ? 'Updating...' : 'Update Product'}
-                                    </>
-                                ) : (
-                                    <>
-                                        <FaPlus style={{ marginRight: '8px' }} />
-                                        {loading ? 'Creating...' : 'Create Product'}
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </form>
+                        </form>
                     )}
                 </div>
             </div>

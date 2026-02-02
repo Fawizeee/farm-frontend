@@ -4,6 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaTrash, FaBox, FaSpinner } from 'react-icons/fa';
 import '../css/EditProductsPage.css';
 import { getProducts, deleteProduct } from '../../services/productService';
+import apiClient from '../../services/apiClient';
+
+const API_BASE_URL = apiClient.defaults.baseURL;
 
 const EditProductsPage = () => {
     const [products, setProducts] = useState([]);
@@ -143,7 +146,18 @@ const EditProductsPage = () => {
                                         <td className="product-id">#{product.id}</td>
                                         <td>
                                             <div style={{ fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <span>{product.icon || '🐟'}</span>
+                                                {product.image_url ? (
+                                                    <img
+                                                        src={product.image_url.startsWith('http') ? product.image_url : `${API_BASE_URL}${product.image_url}`}
+                                                        alt={product.name}
+                                                        className="edit-product-img"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                            e.target.nextSibling.style.display = 'inline';
+                                                        }}
+                                                    />
+                                                ) : null}
+                                                <span className="edit-product-emoji" style={{ display: product.image_url ? 'none' : 'inline' }}>{product.icon || '🐟'}</span>
                                                 {product.name}
                                             </div>
                                         </td>
@@ -192,7 +206,18 @@ const EditProductsPage = () => {
                                     <div className="product-card-header">
                                         <div className="product-card-info">
                                             <div className="product-name">
-                                                <span>{product.icon || '🐟'}</span>
+                                                {product.image_url ? (
+                                                    <img
+                                                        src={product.image_url.startsWith('http') ? product.image_url : `${API_BASE_URL}${product.image_url}`}
+                                                        alt={product.name}
+                                                        className="edit-product-img-mobile"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                            e.target.nextSibling.style.display = 'inline';
+                                                        }}
+                                                    />
+                                                ) : null}
+                                                <span className="edit-product-emoji-mobile" style={{ display: product.image_url ? 'none' : 'inline' }}>{product.icon || '🐟'}</span>
                                                 {product.name}
                                             </div>
                                             <div className="product-price">₦{product.price ? product.price.toLocaleString() : '0'} / {product.unit || 'kg'}</div>
