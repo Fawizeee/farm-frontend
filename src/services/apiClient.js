@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an axios instance with default config
 // Set REACT_APP_API_URL in your .env file
-const enviroment = "lh";
+const enviroment = "";
 const baseURL = enviroment === "lh" ? "http://localhost:8000" : process.env.REACT_APP_API_URL;
 console.log('API Client initialized with baseURL:', baseURL);
 
@@ -46,17 +46,24 @@ apiClient.interceptors.response.use(
         return response;
     },
     async (error) => {
-        // Handle 401 Unauthorized errors
-        if (error.response && error.response.status === 401) {
-            // Clear local storage and redirect to login if necessary
-            localStorage.removeItem('authToken');
+        // Handle 401 Unauthorized or 403 Forbidden (often used for expired tokens)
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            // Check if it's actually an auth error (especially for 403)
+            const isAuthError = error.response.status === 401 ||
+                (error.response.data && error.response.data.detail &&
+                    error.response.data.detail.toLowerCase().includes('token'));
 
-            // Only redirect if not already on admin login page
-            const currentPath = window.location.pathname;
-            if (currentPath !== '/admin') {
-                window.location.href = '/login'; // Redirect regular users to login
+            if (isAuthError) {
+                // Clear local storage
+                localStorage.removeItem('authToken');
+
+                // Redirect to admin login if on an admin route
+                const currentPath = window.location.pathname;
+                if (currentPath.startsWith('/admin') && currentPath !== '/admin') {
+                    console.log('Token expired or invalid, redirecting to admin login');
+                    window.location.href = '/admin';
+                }
             }
-            // If on /admin, don't redirect - let the admin login page handle the error
         }
 
         // Enhanced error logging

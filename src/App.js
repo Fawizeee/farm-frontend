@@ -17,6 +17,7 @@ import NotificationAnalyticsPage from './components/js/NotificationAnalyticsPage
 import OrderConfirmationPage from './components/js/OrderConfirmationPage';
 import { initializeDeviceId } from './utils/deviceCookie';
 import NotificationPermissionModal from './components/js/NotificationPermissionModal';
+import ProtectedRoute from './components/js/ProtectedRoute';
 import {
   initializeNotifications,
   isNotificationSupported,
@@ -184,11 +185,31 @@ function AppContent() {
           </>
         } />
         <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin/home" element={<AdminHome orders={pendingOrders} />} />
-        <Route path="/admin/orders" element={<AdminOrdersPage orders={pendingOrders} />} />
-        <Route path="/admin/products/add" element={<AddProduct />} />
-        <Route path="/admin/products/edit" element={<EditProductsPage />} />
-        <Route path="/admin/notifications/analytics" element={<NotificationAnalyticsPage />} />
+        <Route path="/admin/home" element={
+          <ProtectedRoute>
+            <AdminHome orders={pendingOrders} />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/orders" element={
+          <ProtectedRoute>
+            <AdminOrdersPage orders={pendingOrders} />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/products/add" element={
+          <ProtectedRoute>
+            <AddProduct />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/products/edit" element={
+          <ProtectedRoute>
+            <EditProductsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/notifications/analytics" element={
+          <ProtectedRoute>
+            <NotificationAnalyticsPage />
+          </ProtectedRoute>
+        } />
         <Route path="/order" element={
           <OrderPage
             cart={cart}

@@ -18,7 +18,7 @@ const EditProductsPage = () => {
         const fetchProducts = async () => {
             try {
                 setLoading(true);
-                const productsData = await getProducts();
+                const productsData = await getProducts(false, true);
                 setProducts(productsData);
             } catch (error) {
                 console.error('Error fetching products:', error);
@@ -169,9 +169,21 @@ const EditProductsPage = () => {
                                         <td style={{ fontWeight: '600' }}>₦{product.price ? product.price.toLocaleString() : '0'}</td>
                                         <td>{product.unit || 'kg'}</td>
                                         <td>
-                                            <span className={`product-status-badge ${product.available ? 'status-available' : 'status-unavailable'}`}>
-                                                {product.available ? 'Available' : 'Unavailable'}
-                                            </span>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                <span className={`product-status-badge ${product.available ? 'status-available' : 'status-unavailable'}`}>
+                                                    {product.available ? 'Available' : 'Unavailable'}
+                                                </span>
+                                                {!product.is_active && (
+                                                    <span className="product-status-badge status-unavailable" style={{ background: '#7f8c8d' }}>
+                                                        Inactive
+                                                    </span>
+                                                )}
+                                                {product.is_active && (
+                                                    <span className="product-status-badge status-available" style={{ background: '#27ae60' }}>
+                                                        Active
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td>
                                             <div className="product-actions" onClick={(e) => e.stopPropagation()}>
@@ -222,9 +234,21 @@ const EditProductsPage = () => {
                                             </div>
                                             <div className="product-price">₦{product.price ? product.price.toLocaleString() : '0'} / {product.unit || 'kg'}</div>
                                         </div>
-                                        <span className={`product-status-badge ${product.available ? 'status-available' : 'status-unavailable'}`}>
-                                            {product.available ? 'Available' : 'Unavailable'}
-                                        </span>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'flex-end' }}>
+                                            <span className={`product-status-badge ${product.available ? 'status-available' : 'status-unavailable'}`}>
+                                                {product.available ? 'Available' : 'Unavailable'}
+                                            </span>
+                                            {!product.is_active && (
+                                                <span className="product-status-badge status-unavailable" style={{ background: '#7f8c8d' }}>
+                                                    Inactive
+                                                </span>
+                                            )}
+                                            {product.is_active && (
+                                                <span className="product-status-badge status-available" style={{ background: '#27ae60' }}>
+                                                    Active
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="product-description-mobile">
                                         {product.description}

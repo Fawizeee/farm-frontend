@@ -2,9 +2,12 @@ import apiClient from './apiClient';
 
 const PRODUCTS_ENDPOINT = '/api/products';
 
-export const getProducts = async (availableOnly = false) => {
+export const getProducts = async (availableOnly = false, includeInactive = false) => {
     const response = await apiClient.get(PRODUCTS_ENDPOINT, {
-        // params: { available_only: availableOnly }
+        params: {
+            available_only: availableOnly,
+            include_inactive: includeInactive
+        }
     });
     return response.data;
 };
@@ -23,11 +26,11 @@ export const createProduct = async (productData, imageFile = null) => {
     formData.append('icon', productData.icon || '🐟');
     // Convert boolean to string for FormData
     formData.append('available', String(productData.available !== undefined ? productData.available : true));
-    
+
     if (imageFile) {
         formData.append('image', imageFile);
     }
-    
+
     const response = await apiClient.post(PRODUCTS_ENDPOINT, formData, {
         timeout: 60000, // 60s for uploads (image + backend processing/S3 can exceed 10s)
         headers: {
@@ -39,7 +42,7 @@ export const createProduct = async (productData, imageFile = null) => {
 
 export const updateProduct = async (id, productData, imageFile = null) => {
     const formData = new FormData();
-    
+
     if (productData.name !== undefined) formData.append('name', productData.name);
     if (productData.description !== undefined) formData.append('description', productData.description);
     if (productData.price !== undefined) formData.append('price', productData.price);
@@ -49,11 +52,15 @@ export const updateProduct = async (id, productData, imageFile = null) => {
         // Convert boolean to string for FormData
         formData.append('available', String(productData.available));
     }
-    
+    if (productData.isActive !== undefined) {
+        // Convert boolean to string for FormData
+        formData.append('is_active', String(productData.isActive));
+    }
+
     if (imageFile) {
         formData.append('image', imageFile);
     }
-    
+
     const response = await apiClient.put(`${PRODUCTS_ENDPOINT}/${id}`, formData, {
         timeout: 60000, // 60s for uploads (image + backend processing/S3 can exceed 10s)
         headers: {
