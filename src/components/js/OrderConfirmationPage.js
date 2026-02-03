@@ -58,7 +58,7 @@ function OrderConfirmationPage({ setCart }) {
         };
 
         verify();
-    }, [reference]);
+    }, [reference, setCart]);
 
     return (
         <div className="confirmation-page">
