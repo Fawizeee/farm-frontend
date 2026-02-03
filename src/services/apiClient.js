@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an axios instance with default config
 // Set REACT_APP_API_URL in your .env file
-const enviroment = "";
+const enviroment = "lh";
 const baseURL = enviroment === "lh" ? "http://localhost:8000" : process.env.REACT_APP_API_URL;
 console.log('API Client initialized with baseURL:', baseURL);
 
