@@ -39,7 +39,26 @@ function OrderPage({ cart, setCart, pendingOrders: localPendingOrders, addPendin
     const [error, setError] = useState(null);
     const [dbPendingOrders, setDbPendingOrders] = useState([]);
     const [loadingOrders, setLoadingOrders] = useState(true);
+    const [selectedCategory, setSelectedCategory] = useState('All');
 
+    const categories = ['All', 'Live Fish', 'Smoked Fish', 'Fillets'];
+
+    const filteredProducts = useMemo(() => {
+        if (selectedCategory === 'All') return fishProducts;
+        return fishProducts.filter(product => {
+            const icon = product.icon?.toLowerCase();
+            if (selectedCategory === 'Live Fish') {
+                return ['live', 'fish-small', 'fish-medium', 'fish-large'].includes(icon);
+            }
+            if (selectedCategory === 'Smoked Fish') {
+                return icon === 'smoked';
+            }
+            if (selectedCategory === 'Fillets') {
+                return icon === 'fillet';
+            }
+            return true;
+        });
+    }, [fishProducts, selectedCategory]);
 
     useEffect(() => {
         document.title = 'Order - Mufu Catfish Farm';
@@ -182,6 +201,18 @@ function OrderPage({ cart, setCart, pendingOrders: localPendingOrders, addPendin
             </header>
 
             <div className="catalogue-container">
+                <div className="category-nav">
+                    {categories.map(category => (
+                        <button
+                            key={category}
+                            className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
+                            onClick={() => setSelectedCategory(category)}
+                        >
+                            {category}
+                        </button>
+                    ))}
+                </div>
+
                 {loading && (
                     <div className="catalogue-grid">
                         {[1, 2, 3, 4, 5, 6].map(n => (
@@ -209,7 +240,7 @@ function OrderPage({ cart, setCart, pendingOrders: localPendingOrders, addPendin
 
                 {!loading && !error && (
                     <div className="catalogue-grid">
-                        {fishProducts.map(product => (
+                        {filteredProducts.map(product => (
                             <div
                                 key={product.id}
                                 className={`catalogue-card ${!product.available ? 'unavailable' : ''}`}
